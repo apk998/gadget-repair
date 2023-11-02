@@ -1,14 +1,13 @@
 package com.solvd.gadgetrepair.cost;
 
 import com.solvd.gadgetrepair.devices.DeviceRepairInfo;
-import com.solvd.gadgetrepair.devices.Gadget;
 
-// Handles repair time and cost estimation based on device and problem
     import java.util.ArrayList;
     import java.util.List;
     import java.util.Queue;
     import java.util.LinkedList;
 
+// Handles repair time and cost estimation based on device and problem
 public class RepairService {
     private List<DeviceRepairInfo> supportedDevices;
     private double laborCostPerHour;
@@ -18,12 +17,12 @@ public class RepairService {
 
     public RepairService() {
         supportedDevices = new ArrayList<>();
-        supportedDevices.add(new DeviceRepairInfo("phone", 50.00, 2)); // just examples
-        supportedDevices.add(new DeviceRepairInfo("laptop", 100.00, 4));
-        supportedDevices.add(new DeviceRepairInfo("TV", 75.00, 3));
+        supportedDevices.add(new DeviceRepairInfo("phone", "screen", 50.00, 2));   // just defaults
+        supportedDevices.add(new DeviceRepairInfo("laptop", "battery", 100.00, 4));
+        supportedDevices.add(new DeviceRepairInfo("TV", "screen", 75.00, 3));
         laborCostPerHour = 25.00; // example wage
-        sparePartsCost = 0.00;
-        additionalFees = 10.00; // could include overhead
+        sparePartsCost = 100.00;
+        additionalFees = 20.00; // could include overhead
         repairQueue = new LinkedList<DeviceRepairInfo>();
     }
 
