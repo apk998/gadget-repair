@@ -2,57 +2,30 @@ package com.solvd.gadgetrepair.cost;
 
 import com.solvd.gadgetrepair.devices.DeviceRepairInfo;
 
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Queue;
-    import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.LinkedList;
 
 // Handles repair time and cost estimation based on device and problem
 public class RepairService {
     private List<DeviceRepairInfo> supportedDevices;
-    private double laborCostPerHour;
-    private double sparePartsCost;
-    private double additionalFees;
     private Queue<DeviceRepairInfo> repairQueue;
 
     public RepairService() {
         supportedDevices = new ArrayList<>();
-        supportedDevices.add(new DeviceRepairInfo("phone", "screen", 50.00, 2));   // just defaults
-        supportedDevices.add(new DeviceRepairInfo("laptop", "battery", 100.00, 4));
-        supportedDevices.add(new DeviceRepairInfo("TV", "screen", 75.00, 3));
-        laborCostPerHour = 25.00; // example wage
-        sparePartsCost = 100.00;
-        additionalFees = 20.00; // could include overhead
-        repairQueue = new LinkedList<DeviceRepairInfo>();
-    }
+        supportedDevices.add(new DeviceRepairInfo.PhoneRepair("screen", 150.00));
+        supportedDevices.add(new DeviceRepairInfo.LaptopRepair("screen", 300.00));
+        supportedDevices.add(new DeviceRepairInfo.TVRepair("screen", 250.00));
 
-    // To calculate repair time for a particular gadget
-    public int estimateRepairTime(DeviceRepairInfo gadgetType) {
-        for (DeviceRepairInfo gadget : supportedDevices) {
-            if (gadget.getGadgetType().equalsIgnoreCase(gadgetType.getGadgetType())) {
-                return gadget.getRepairTime();
-            }
-        }
-        return -1; // if the gadget type is not supported
-    }
-
-    // To calculate repair cost for a particular gadget
-    public double calculateRepairCost(DeviceRepairInfo gadget) {
-        String gadgetType = gadget.getGadgetType();
-        for (DeviceRepairInfo supportedDevice : supportedDevices) {
-            if (supportedDevice.getGadgetType().equalsIgnoreCase(gadgetType)) {
-                double laborCost = laborCostPerHour * supportedDevice.getRepairTime();
-                double totalCost = laborCost + sparePartsCost + additionalFees;
-                return totalCost;
-            }
-        }
-        return -1.0; // if the device type is not supported
+        repairQueue = new LinkedList<>();
     }
 
     // Add a gadget to the queue
     public void addToQueue(DeviceRepairInfo gadget) {
         repairQueue.add(gadget);
     }
+
     // Mark a gadget as repaired
     public void markRepaired(DeviceRepairInfo gadget) {
         repairQueue.remove(gadget);
@@ -63,12 +36,8 @@ public class RepairService {
         StringBuilder summary = new StringBuilder("Repair Service Information:\n");
         summary.append("Supported Devices:\n");
         for (DeviceRepairInfo gadget : supportedDevices) {
-            summary.append(gadget.getGadgetType()).append(" - Cost: $").append(gadget.getRepairCost())
-                    .append(", Time Estimate: ").append(gadget.getRepairTime()).append("hours\n");
+            summary.append(gadget.getClass().getSimpleName()).append(" - Cost: $").append(gadget.calculateRepairCost()).append("\n");
         }
-        summary.append("Labor Cost per Hour: $").append(laborCostPerHour).append("\n");
-        summary.append("Spare Parts Cost: $").append(sparePartsCost).append("\n");
-        summary.append("Additional Fees: $").append(additionalFees).append("\n");
         summary.append("Devices in Repair Queue: ").append(repairQueue.size()).append("\n");
         return summary.toString();
     }
