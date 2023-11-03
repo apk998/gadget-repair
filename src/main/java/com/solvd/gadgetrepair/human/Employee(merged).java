@@ -1,3 +1,6 @@
+/* This class has been merged as a child class into the Person parent class.
+
+
 package com.solvd.gadgetrepair.human;
 
 // Represents the employee or technician working for the repair service
@@ -36,3 +39,5 @@ public class Employee {
         return "Employee name: " + name + "\nSpecialty: " + specialty + "\nAvailability: " + availability;
     }
 }
+
+*/
