@@ -12,7 +12,7 @@ public abstract class DeviceRepairInfo {
     public static final double TAX_RATE = 1.08;
 
     public DeviceRepairInfo(String deviceType, String partsNeeded, double repairCost, int repairTime,
-                            double sparePartsCost, double LABOR_COST_PER_HOUR, double ADDITIONAL_FEES) {
+                            double sparePartsCost) {
         this.deviceType = deviceType;
         this.partsNeeded = partsNeeded;
         this.repairCost = repairCost;
