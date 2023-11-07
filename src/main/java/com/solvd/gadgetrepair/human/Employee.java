@@ -1,26 +1,16 @@
-/* This class has been merged as a child class into the Person parent class.
-
-
 package com.solvd.gadgetrepair.human;
 
 // Represents the employee or technician working for the repair service
-public class Employee {
-    private String name;
+public class Employee extends Person {
     private String specialty;
     private String availability;
 
-    public Employee(String name, String specialty, String availability) {
-        this.name = name;
+    public Employee(String fullName, String specialty, String availability) {
+        super(fullName);
         this.specialty = specialty;
         this.availability = availability;
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
     public String getSpecialty() {
         return specialty;
     }
@@ -35,9 +25,7 @@ public class Employee {
     }
 
     @Override
-    public String toString() {
-        return "Employee name: " + name + "\nSpecialty: " + specialty + "\nAvailability: " + availability;
+    public String getInfo() {
+        return "Employee name: " + fullName + "\nSpecialty: " + specialty + "\nAvailability: " + availability;
     }
 }
-
-*/
