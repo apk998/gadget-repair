@@ -1,9 +1,13 @@
 package com.solvd.gadgetrepair.devices;
 
+import com.solvd.gadgetrepair.exceptions.InventoryFullException;
+import com.solvd.gadgetrepair.exceptions.NotEnoughPartsException;
+import com.solvd.gadgetrepair.exceptions.UnsupportedPartException;
+
 // Stores the stock of spare parts and tools for repair
 public class Inventory {
-    private String[] parts;
-    private int[] quantities;
+    private final String[] parts;
+    private final int[] quantities;
     public static final int MAX_CAPACITY = 5000;
     public static final int DEFAULT_PART_QUANTITY = 10;
 
@@ -22,10 +26,9 @@ public class Inventory {
         return totalParts >= MAX_CAPACITY;
     }
 
-    public void addPart(String part, int quantity) {
+    public void addPart(String part, int quantity) throws InventoryFullException {
         if (isInventoryFull()) {
-            System.out.println("Inventory is full. Cannot add part(s).");
-            return;
+            throw new InventoryFullException("Inventory is full. Cannot add part(s).");
         }
 
         for (int i=0; i < parts.length; i++) {
@@ -37,17 +40,23 @@ public class Inventory {
         }
     }
 
-    public void removePart(String part, int quantity) {
+    public void removePart(String part, int quantity) throws NotEnoughPartsException, UnsupportedPartException {
+        int partIndex = -1;
         for (int i=0; i < parts.length; i++) {
             if (parts[i] != null && parts[i].equals(part)) {
-                if (quantities[i] > quantity) {
-                    quantities[i] -= quantity;
-                } else {
-                    parts[i] = null;
-                    quantities[i] = 0;
-                }
+                partIndex = i;
                 break;
             }
+        }
+        if (partIndex == -1) {
+            throw new UnsupportedPartException("Part not recognized or supported.");
+        }
+        if (quantities[partIndex] < quantity) {
+            throw new NotEnoughPartsException("Not enough parts in stock.");
+        }
+        quantities[partIndex] -= quantity;
+        if (quantities[partIndex] == 0) {
+            parts[partIndex] = null;
         }
     }
 
@@ -57,6 +66,6 @@ public class Inventory {
                 return quantities[i];
             }
         }
-        return 0;   // if the part is not found
+        return -1;   // if the part is not found
     }
 }
