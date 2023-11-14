@@ -70,10 +70,8 @@ public class Main {
 
         // Check inventory for necessary part
         Inventory inventory = new Inventory(Inventory.MAX_CAPACITY);
+        // Employee mistakenly grabs wrong part
         try {
-            inventory.addPart("screen", Inventory.DEFAULT_PART_QUANTITY);
-
-            // Employee mistakenly grabs wrong part
             int screensNeeded = 1;
             try {
                 inventory.removePart("keyboard", screensNeeded);
@@ -106,7 +104,7 @@ public class Main {
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
 
         // Add a new service record to the customer
-        ServiceRecord newRecord = new ServiceRecord("30/10/23", 237.60, "Screen repair");
+        ServiceRecord newRecord = new ServiceRecord("13/11/23", 237.60, "Screen repair");
         customer2.addRepairRecord(newRecord);
 
         // Update customer's repair history
