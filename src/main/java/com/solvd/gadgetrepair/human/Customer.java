@@ -10,7 +10,7 @@ public class Customer extends Person {
     private String email;
     private String phoneNumber;
     private String preferredContact;
-    private List<ServiceRecord> repairHistory;
+    private List<ServiceRecord<String>> repairHistory;
 
     public Customer(String fullName, String email, String phoneNumber, String preferredContact) {
         super(fullName);
@@ -44,10 +44,10 @@ public class Customer extends Person {
     public void setPreferredContact(String preferredContact) {
         this.preferredContact = preferredContact;
     }
-    public List<ServiceRecord> getRepairHistory() {
+    public List<ServiceRecord<String>> getRepairHistory() {
         return repairHistory;
     }
-    public void addRepairRecord(ServiceRecord serviceRecord) {
+    public void addRepairRecord(ServiceRecord<String> serviceRecord) {
         repairHistory.add(serviceRecord);
     }
 
