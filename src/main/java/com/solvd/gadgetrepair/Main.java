@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
     static {
-        System.setProperty("log4j.configurationfile", "log4j2.xml");
+        System.setProperty("log4j.configurationfile", "src/main/resources/log4j2.xml");
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         // Customers enter the store
@@ -31,7 +31,7 @@ public class Main {
             gadget1 = new Gadget("Pager", "SN789", "won't turn on");
             LOGGER.info(customer1.getFullName() + " brings in a " + gadget1.getGadgetType() + " that " + gadget1.getProblemDescription() + " for repair.");
         } catch (GadgetException e) {
-            LOGGER.info("Unaccepted gadget: " + e.getMessage());
+            LOGGER.info(e.getMessage());
         }
         Gadget gadget2 = null;
         try {
@@ -43,10 +43,10 @@ public class Main {
 
         // Pull up customer record, enter preferred notification method
         PhoneRepair repairInfo = new PhoneRepair("screen", 150.00);
-        ServiceRecord[] repairRecords = {
-                new ServiceRecord("15/2/22", 250.00, "Screen replacement"),
-                new ServiceRecord("14/1/23", 100.00, "Battery replacement"),
-                new ServiceRecord("22/10/23", 75.00, "Software update")
+        ServiceRecord<String>[] repairRecords = new ServiceRecord[]{
+                new ServiceRecord<>("15/2/22", 250.00, "Screen replacement"),
+                new ServiceRecord<>("14/1/23", 100.00, "Battery replacement"),
+                new ServiceRecord<>("22/10/23", 75.00, "Software update")
         };
         Notifiable emailMethod = new Email(null);
 
@@ -77,13 +77,17 @@ public class Main {
                 inventory.removePart("keyboard", screensNeeded);
                 LOGGER.info("Used " + screensNeeded + " screen(s) from inventory for repair.");
             } catch (UnsupportedPartException e) {
-                LOGGER.info("Unsupported part: " + e.getMessage());
-                // Offer the employee another chance to grab the correct part
+                LOGGER.info(e.getMessage());
                 inventory.addPart("screen", 1);
+            }
+            // Offer the employee another chance to grab the correct part
+            try {
+                inventory.removePart("screen", 2);
             } catch (NotEnoughPartsException e) {
-                LOGGER.info("Not enough parts in stock: " + e.getMessage());
+                LOGGER.info(e.getMessage());
                 // Offer the employee another chance to grab the correct quantity
                 inventory.addPart("screen", Inventory.DEFAULT_PART_QUANTITY);
+                inventory.removePart("screen", 1);
             }
         } catch (InventoryFullException e) {
             LOGGER.info("Inventory is full: " + e.getMessage());
@@ -92,11 +96,10 @@ public class Main {
         } finally {
             int screenStock = inventory.getQuantity("screen");
             if (screenStock > 0) {
-                LOGGER.info("Available screens in inventory: " + screenStock);
+                LOGGER.info(screenStock + " screen(s) left in inventory.");
             } else {
                 LOGGER.info("No screens in inventory, repair cannot proceed.");
             }
-            LOGGER.info(screenStock + " screen(s) left in inventory.");
         }
 
         // Gadget repair is now finished
@@ -104,7 +107,7 @@ public class Main {
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
 
         // Add a new service record to the customer
-        ServiceRecord newRecord = new ServiceRecord("13/11/23", 237.60, "Screen repair");
+        ServiceRecord<String> newRecord = new ServiceRecord<>("13/11/23", 237.60, "Screen repair");
         customer2.addRepairRecord(newRecord);
 
         // Update customer's repair history
