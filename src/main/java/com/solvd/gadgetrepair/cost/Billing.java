@@ -21,7 +21,11 @@ public abstract class Billing {
         return paymentMethod;
     }
     public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+        if (isPaymentAccepted(paymentMethod)) {
+            this.paymentMethod = paymentMethod;
+        } else {
+            throw new PaymentException("Unaccepted payment method: " + paymentMethod);
+        }
     }
 
     public void calculateCost(Customer customer, ServiceRecord[] repairRecords) {
