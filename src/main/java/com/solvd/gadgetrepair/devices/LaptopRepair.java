@@ -1,37 +1,101 @@
 package com.solvd.gadgetrepair.devices;
 
-public class LaptopRepair extends DeviceRepairInfo implements Repairable {
-    public LaptopRepair(String partsNeeded, double sparePartsCost) {
-        super("Laptop", partsNeeded, 0.0, 0, sparePartsCost);
+import com.solvd.gadgetrepair.exceptions.ProblemException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class LaptopRepair extends RepairService implements Repairable {
+    // Map to store part costs
+    private static final Map<String, Double> LAPTOP_PART_COSTS = initializePartCosts();
+    private String partNeeded;
+
+    public LaptopRepair(Gadget gadget) {
+        super(gadget);
+        laptopParts(gadget);
     }
 
-    @Override
-    public int estimateRepairTime() {
-        // Assume a fixed time estimate of 4 hours for laptop repair for all causes
-        return 4;
+    private static Map<String, Double> initializePartCosts() {
+        Map<String, Double> partCosts = new HashMap<>();
+        partCosts.put("screen", 300.0);
+        partCosts.put("hard drive", 50.0);
+        partCosts.put("battery", 150.0);
+        partCosts.put("keyboard", 125.0);
+        partCosts.put("fan", 50.0);
+        partCosts.put("labor only", 0.0);
+        return partCosts;
     }
 
-    @Override
-    public double calculatePartsCost(String partsNeeded) {
-        if ("screen".equalsIgnoreCase(partsNeeded)) {
-            return 300.00;
-        } else if ("battery".equalsIgnoreCase(partsNeeded)) {
-            return 150.00;
-        } else if ("camera lens".equalsIgnoreCase(partsNeeded)) {
-            return 50.00;
-        } else if ("keyboard".equalsIgnoreCase(partsNeeded)) {
-            return 125.00;
-        } else {
-            return 0.00; // part is not recognized or supported
+    public void laptopParts(Gadget gadget) throws ProblemException {
+        String problem = gadget.getProblemDescription();
+        String partNeeded;
+        switch (problem) {
+            case "cracked screen":
+                partNeeded = "screen";
+                break;
+            case "hard drive failure":
+                partNeeded = "hard drive";
+                break;
+            case "battery malfunction":
+            case "charging problems":
+                partNeeded = "battery";
+                break;
+            case "keyboard damage":
+                partNeeded = "keyboard";
+                break;
+            case "overheating":
+                partNeeded = "fan";
+                break;
+            case "connectivity problems":
+            case "virus or malware":
+                partNeeded = "labor only";
+                break;
+            default:
+                throw new ProblemException("We cannot fix the gadget");
         }
+        this.partNeeded = partNeeded;
+    }
+
+    @Override
+    public int estimateRepairTime(Gadget gadget) throws ProblemException {
+        String problem = gadget.getProblemDescription();
+        int repairTime;   // in hours
+        switch (problem) {
+            case "cracked screen":
+            case "battery malfunction":
+            case "charging problems":
+                repairTime = 1;
+                break;
+            case "overheating":
+            case "connectivity problems":
+                repairTime = 2;
+                break;
+            case "keyboard damage":
+            case "hard drive problems":
+            case "virus or malware":
+                repairTime = 3;
+                break;
+            default:
+                throw new ProblemException("We cannot fix the gadget");
+        }
+        return repairTime;
+    }
+
+    @Override
+    public double calculatePartsCost(String partNeeded) throws ProblemException {
+        double partsCost;
+        if (LAPTOP_PART_COSTS.containsKey(partNeeded)) {
+            partsCost = LAPTOP_PART_COSTS.get(partNeeded);
+        } else {
+            throw new ProblemException("Unsupported part: " + partNeeded);
+        }
+        return partsCost;
     }
 
     @Override
     public double calculateRepairCost() {
-        int repairTime = estimateRepairTime();
-        double partsCost = calculatePartsCost(partsNeeded);
-        double laborCost = LABOR_COST_PER_HOUR * repairTime;
-        double totalCost = (laborCost + partsCost + ADDITIONAL_FEES) * TAX_RATE;
-        return totalCost;
+        double laborCost = estimateRepairTime(getGadget()) * LABOR_COST_PER_HOUR;
+        double subtotal = laborCost + calculatePartsCost(partNeeded) + ADDITIONAL_FEES;
+        return subtotal * TAX_RATE;
     }
 }

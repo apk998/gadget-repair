@@ -5,10 +5,10 @@ public class Employee extends Person {
     private String specialty;
     private String availability;
 
-    public Employee(String fullName, String specialty, String availability) {
-        super(fullName);
-        this.specialty = specialty;
-        this.availability = availability;
+    public Employee() {
+        super("");
+        this.specialty = "";
+        this.availability = "";
     }
 
     public String getSpecialty() {
@@ -26,6 +26,6 @@ public class Employee extends Person {
 
     @Override
     public String getInfo() {
-        return "Employee name: " + fullName + "\nSpecialty: " + specialty + "\nAvailability: " + availability;
+        return "Employee name: " + getFullName() + "\nSpecialty: " + specialty + "\nAvailability: " + availability;
     }
 }

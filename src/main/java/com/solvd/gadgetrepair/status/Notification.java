@@ -3,7 +3,7 @@ package com.solvd.gadgetrepair.status;
 import com.solvd.gadgetrepair.human.Customer;
 
 public abstract class Notification {
-    protected Notifiable notifiable;
+    private final Notifiable notifiable;
 
     public Notification(Notifiable notifiable) {
         this.notifiable = notifiable;

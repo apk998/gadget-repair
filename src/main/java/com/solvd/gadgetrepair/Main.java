@@ -14,35 +14,43 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Main {
-    static {
-        System.setProperty("log4j.configurationfile", "src/main/resources/log4j2.xml");
-    }
-
     private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         // Customers enter the store
-        Customer customer1 = new Customer("Max Stirner", "mstirner@example.com", "215-555-9640", "SMS");
-        Customer customer2 = new Customer("Emma Goldman", "egoldman@example.com", "215-555-2321", "email");
+        Customer customer1 = new Customer();
+        customer1.setFullName("Max Stirner");
+        customer1.setEmail("mstirner@example.com");
+        customer1.setPhoneNumber("215-555-9640");
+        customer1.setPreferredContact("SMS");
+
+        Customer customer2 = new Customer();
+        customer2.setFullName("Emma Goldman");
+        customer2.setEmail("egoldman@example.com");
+        customer2.setPhoneNumber("215-555-2321");
+        customer2.setPreferredContact("email");
 
         // Customers present gadgets for repair
         Gadget gadget1;
         try {
-            gadget1 = new Gadget("Pager", "SN789", "won't turn on");
+            gadget1 = new Gadget();
+            gadget1.setGadgetType("Pager");
+            gadget1.setProblemDescription("won't turn on");
             LOGGER.info(customer1.getFullName() + " brings in a " + gadget1.getGadgetType() + " that " + gadget1.getProblemDescription() + " for repair.");
         } catch (GadgetException e) {
             LOGGER.info(e.getMessage());
         }
         Gadget gadget2 = null;
         try {
-            gadget2 = new Gadget("Phone", "SN123456", "cracked screen");
+            gadget2 = new Gadget();
+            gadget2.setGadgetType("Phone");
+            gadget2.setProblemDescription("cracked screen");
             LOGGER.info(customer2.getFullName() + " brings in a " + gadget2.getGadgetType() + " with a " + gadget2.getProblemDescription() + " for repair.");
         } catch (GadgetException e) {
             LOGGER.info("Unaccepted gadget: " + e.getMessage());
         }
 
         // Pull up customer record, enter preferred notification method
-        PhoneRepair repairInfo = new PhoneRepair("screen", 150.00);
         ServiceRecord<String>[] repairRecords = new ServiceRecord[]{
                 new ServiceRecord<>("15/2/22", 250.00, "Screen replacement"),
                 new ServiceRecord<>("14/1/23", 100.00, "Battery replacement"),
@@ -56,17 +64,25 @@ public class Main {
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
 
         // Find an employee
-        Employee employee = new Employee("John Zerzan", "Phone technician", "Available");
+        Employee employee = new Employee();
+        employee.setFullName("John Zerzan");
+        employee.setSpecialty("Phone technician");
+        employee.setAvailability("Available");
         LOGGER.info("Employee " + employee.getFullName() + " is " + employee.getAvailability());
         employee.setAvailability("Busy");
         LOGGER.info(employee.getFullName() + " is now " + employee.getAvailability());
         repairStatus.markUnderRepair(gadget2);
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
 
-        // Get time and cost estimates
-        int phoneRepairTime = repairInfo.estimateRepairTime();
-        double phoneRepairCost = repairInfo.calculateRepairCost();
-        LOGGER.info("Phone Repair - Time Estimate: " + phoneRepairTime + " hours, Cost: $" + phoneRepairCost);
+        try {
+            RepairService repairService = (RepairService) RepairService.getRepairInfo(gadget2);
+            int phoneRepairTime = repairService.estimateRepairTime(gadget2);
+            double phoneRepairCost = repairService.calculateRepairCost();
+            LOGGER.info("Phone Repair - Time Estimate: " + phoneRepairTime + " hours, Cost: $" + phoneRepairCost);
+        } catch (GadgetException e) {
+            LOGGER.info(e.getMessage());
+        }
+
 
         // Check inventory for necessary part
         Inventory inventory = new Inventory(Inventory.MAX_CAPACITY);

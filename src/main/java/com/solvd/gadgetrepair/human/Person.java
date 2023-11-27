@@ -1,7 +1,7 @@
 package com.solvd.gadgetrepair.human;
 
 public abstract class Person {
-    protected String fullName;
+    private String fullName;
 
     public Person(String fullName) {
         this.fullName = fullName;
@@ -21,3 +21,4 @@ public abstract class Person {
     public String toString() {
         return getInfo();
     }
+}

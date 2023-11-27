@@ -10,13 +10,13 @@ public class Customer extends Person {
     private String email;
     private String phoneNumber;
     private String preferredContact;
-    private List<ServiceRecord<String>> repairHistory;
+    private final List<ServiceRecord<String>> repairHistory;
 
-    public Customer(String fullName, String email, String phoneNumber, String preferredContact) {
-        super(fullName);
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.preferredContact = preferredContact;
+    public Customer() {
+        super("");
+        this.email = "";
+        this.phoneNumber = "";
+        this.preferredContact = "";
         this.repairHistory = new ArrayList<>();
     }
 
@@ -53,7 +53,7 @@ public class Customer extends Person {
 
     @Override
     public String getInfo() {
-        return "Customer name: " + fullName + "\nEmail: " + email +
+        return "Customer name: " + getFullName() + "\nEmail: " + email +
                 "\nPhone Number: " + phoneNumber + "\nPreferred Contact Method: " + preferredContact;
     }
 }

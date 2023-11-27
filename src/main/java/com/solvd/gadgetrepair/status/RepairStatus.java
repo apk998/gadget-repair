@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class RepairStatus {
-    private Map<Gadget, String> status;   // Map to associate gadgets with their status
-    private List<Gadget> inQueue;         // List of gadgets in the repair queue
-    private List<Gadget> underRepair;     // List of gadgets currently under repair
-    private List<Gadget> ready;           // List of gadgets ready for pickup
+    private final Map<Gadget, String> status;   // Map to associate gadgets with their status
+    private final List<Gadget> inQueue;         // List of gadgets in the repair queue
+    private final List<Gadget> underRepair;     // List of gadgets currently under repair
+    private final List<Gadget> ready;           // List of gadgets ready for pickup
 
     public RepairStatus() {
         status = new HashMap<>();

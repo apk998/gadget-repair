@@ -7,7 +7,7 @@ import com.solvd.gadgetrepair.human.Customer;
 import java.util.Arrays;
 
 // Calculates total cost, generates invoices, and processes payments
-public abstract class Billing {
+public abstract class Billing {   // FIX COST CALCULATIONS
     private double totalCost;
     private String paymentMethod;
 
