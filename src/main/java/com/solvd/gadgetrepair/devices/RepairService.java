@@ -31,11 +31,12 @@ public abstract class RepairService {
     }
 
     public abstract int estimateRepairTime(Gadget gadget);
-    public abstract double calculatePartsCost();
+    public abstract double calculatePartsCost(String partNeeded);
+    public abstract String getPartNeeded();
 
     public double calculateRepairCost() {
         double laborCost = estimateRepairTime(gadget) * LABOR_COST_PER_HOUR;
-        double partsCost = calculatePartsCost();
+        double partsCost = calculatePartsCost(getPartNeeded());
         double subtotal = laborCost + partsCost + ADDITIONAL_FEES;
         return subtotal * TAX_RATE;
     }

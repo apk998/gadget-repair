@@ -94,4 +94,9 @@ public class TVRepair extends RepairService implements Repairable {
         double subtotal = laborCost + calculatePartsCost(partNeeded) + ADDITIONAL_FEES;
         return subtotal * TAX_RATE;
     }
+
+    @Override
+    public String getPartNeeded() {
+        return partNeeded;
+    }
 }
