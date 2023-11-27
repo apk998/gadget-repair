@@ -6,9 +6,6 @@ import org.apache.logging.log4j.Logger;
 
 public class CreditCard extends Billing implements Payable {
     private static final Logger LOGGER=LogManager.getLogger(CreditCard.class);
-    public CreditCard() {
-        setPaymentMethod("Credit card");
-    }
 
     @Override
     public void processPayment (Customer customer) {

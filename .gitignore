@@ -2,6 +2,9 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea
+target
+GadgetRepair2.iml
 
 ### Eclipse ###
 .apt_generated

@@ -131,20 +131,25 @@ public class Main {
 
         // Generate and send invoice
         Billing payment = new CreditCard();
-        payment.calculateCost(customer2, new ServiceRecord[]{newRecord});
-        emailMethod.sendNotification(customer2, "Repair complete", "Your device is ready for pickup");
-
-        // Process payment
         try {
+            payment.setPaymentMethod("Check");
+            payment.calculateCost(customer2, new ServiceRecord[]{newRecord});
+            emailMethod.sendNotification(customer2, "Repair complete", "Your device is ready for pickup");
+
+            // Process payment
             payment.processPayment(customer2);
         } catch (PaymentException e) {
             LOGGER.info("Failed to process payment: " + e.getMessage());
+
             // Customer offers alternative payment method
             Billing alternativePayment = new CreditCard();
             try {
+                alternativePayment.setPaymentMethod("Credit Card");
+                alternativePayment.calculateCost(customer2, new ServiceRecord[]{newRecord});
+                emailMethod.sendNotification(customer2, "Repair complete", "Your device is ready for pickup");
                 alternativePayment.processPayment(customer2);
             } catch (PaymentException ex) {
-                LOGGER.info("Failed to process alternative payment: " + e.getMessage());
+                LOGGER.info("Failed to process alternative payment: " + ex.getMessage());
             }
         }
     }

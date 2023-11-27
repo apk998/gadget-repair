@@ -6,9 +6,6 @@ import org.apache.logging.log4j.Logger;
 
 public class PayPal extends Billing implements Payable {
     private static final Logger LOGGER= LogManager.getLogger(PayPal.class);
-    public PayPal() {
-        setPaymentMethod("PayPal");
-    }
 
     @Override
     public void processPayment(Customer customer) {
