@@ -4,50 +4,26 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class CountingAlgorithm {
 
     public static void main(String[] args) {
-        String[] givenWords = {"social", "Durkheim", "world", "between"};
-        Map<String, Integer> wordCount = new HashMap<>();
+        File file = new File("src/main/resources/bourdieu.txt");
+        String[] words = {"social", "Durkheim", "world", "between"};
 
         try {
-            List<String> lines = FileUtils.readLines(new File("src/main/resources/bourdieu.txt"));
+            String filetext = FileUtils.readFileToString(file, "UTF-8");
+            StringBuilder total = new StringBuilder();
 
-            for (String line : lines) {
-                String[] words = StringUtils.split(line);
-                for (String word : words) {
-                    if (isGivenWord(word, givenWords)) {
-                        wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
-                    }
-                }
+            for (String word : words) {
+                int appearances = StringUtils.countMatches(filetext, word);
+                String line = word + " = " + appearances + "\n";
+                total.append(line);
             }
-            writeOutput(wordCount, "src/main/resources/wordcount.txt");
-
+            FileUtils.write(new File("src/main/resources/wordcount.txt"), total.toString(), "UTF-8");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static void writeOutput(Map<String, Integer> wordCount, String outputFile) throws IOException {
-        try (FileWriter writer = new FileWriter(outputFile)) {
-            for (Map.Entry<String, Integer> entry : wordCount.entrySet()) {
-                writer.write(entry.getKey() + " = " + entry.getValue() + "\n");
-            }
-        }
-    }
-
-    private static boolean isGivenWord(String word, String[] givenWords) {
-        for (String givenWord : givenWords) {
-            if (word.equals(givenWord)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
