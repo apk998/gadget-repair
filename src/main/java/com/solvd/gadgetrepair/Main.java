@@ -15,6 +15,8 @@ import com.solvd.gadgetrepair.status.RepairStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Scanner;
+
 public class Main {
     private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
@@ -27,10 +29,27 @@ public class Main {
         customer.setPreferredContact(AcceptedContact.EMAIL);
 
         // Customer presents gadget for repair
+        IMenu chooseGadgetType = () -> {
+            System.out.println("Choose a gadget type:");
+            AcceptedGadgets[] gadgetTypes = AcceptedGadgets.values();
+            for (int i = 0; i < gadgetTypes.length; i++) {
+                System.out.println((i + 1) + ". " + gadgetTypes[i].getDisplayName());
+            }
+
+            int userChoice = getUserChoice(gadgetTypes.length);
+
+            Gadget gadget = new Gadget();
+            gadget.setGadgetType(gadgetTypes[userChoice - 1]);
+
+            // Display the chosen gadget type
+            System.out.println("Chosen Gadget Type: " + gadget.getGadgetType().getDisplayName());
+        };
+        chooseGadgetType.execute();
+
         Gadget gadget = new Gadget();
         gadget.setGadgetType(AcceptedGadgets.PHONE);
         gadget.setProblemDescription("cracked screen");
-        LOGGER.info(customer.getFullName() + " brings in a " + gadget.getGadgetType() + " with a " + gadget.getProblemDescription() + " for repair.");
+        LOGGER.info(customer.getFullName() + " brings in a " + gadget.getGadgetType().getDisplayName() + " with a " + gadget.getProblemDescription() + " for repair.");
 
         // Pull up customer record, enter preferred notification method
         ServiceRecord<String>[] repairRecords = new ServiceRecord[]{
@@ -123,5 +142,32 @@ public class Main {
         } catch (PaymentException e) {
             LOGGER.info(e.getMessage() + "Try another payment method.");
         }
+    }
+
+    private static void displayMenu(String menuTitle, IMenu[] menuOptions) {
+        System.out.println(menuTitle + ":");
+        for (int i = 0; i < menuOptions.length; i++) {
+            System.out.println((i + 1) + ". " + menuOptions[i].getClass().getSimpleName());
+        }
+    }
+
+    private static int getUserChoice(int maxOption) {
+        Scanner scanner = new Scanner(System.in);
+        int userChoice = 0;
+
+        do {
+            System.out.print("Enter your choice (1-" + maxOption + "): ");
+            try {
+                userChoice = Integer.parseInt(scanner.nextLine());
+
+                if (userChoice < 1 || userChoice > maxOption) {
+                    System.out.println("Invalid choice. Please enter a number between 1 and " + maxOption + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        } while (userChoice < 1 || userChoice > maxOption);
+
+        return userChoice;
     }
 }

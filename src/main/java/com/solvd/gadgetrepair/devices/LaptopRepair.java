@@ -1,5 +1,7 @@
 package com.solvd.gadgetrepair.devices;
 
+import com.solvd.gadgetrepair.exceptions.ProblemException;
+
 public class LaptopRepair extends RepairService implements Repairable {
     private final RepairCosts repairCosts;
     private String partNeeded;
@@ -30,5 +32,26 @@ public class LaptopRepair extends RepairService implements Repairable {
     @Override
     public String getPartNeeded() {
         return partNeeded;
+    }
+
+    private String determinePartNeeded(String problem) throws ProblemException {
+        switch (problem) {
+            case "cracked screen":
+                return "screen";
+            case "hard drive failure":
+                return "hard drive";
+            case "battery malfunction":
+            case "charging problems":
+                return "battery";
+            case "keyboard damage":
+                return "keyboard";
+            case "overheating":
+                return "fan";
+            case "connectivity problems":
+            case "virus or malware":
+                return "labor only";
+            default:
+                throw new ProblemException("Unsupported problem: " + problem);
+        }
     }
 }
