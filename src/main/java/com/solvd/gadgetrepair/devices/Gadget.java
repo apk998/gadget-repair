@@ -2,16 +2,16 @@ package com.solvd.gadgetrepair.devices;
 
 // Represents the gadgets brought in to be repaired
 public class Gadget {
-    private String gadgetType;
+    private AcceptedGadgets gadgetType;
     private String problemDescription;
 
     public Gadget() {
     }
 
-    public String getGadgetType() {
+    public AcceptedGadgets getGadgetType() {
         return gadgetType;
     }
-    public void setGadgetType(String gadgetType) {
+    public void setGadgetType(AcceptedGadgets gadgetType) {
         this.gadgetType = gadgetType;
     }
     public String getProblemDescription() {

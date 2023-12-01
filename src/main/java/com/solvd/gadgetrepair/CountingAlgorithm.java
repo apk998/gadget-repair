@@ -9,11 +9,10 @@ import java.io.IOException;
 public class CountingAlgorithm {
 
     public static void main(String[] args) {
-        File file = new File("src/main/resources/bourdieu.txt");
         String[] words = {"social", "Durkheim", "world", "between"};
 
         try {
-            String filetext = FileUtils.readFileToString(file, "UTF-8");
+            String filetext = FileUtils.readFileToString(new File("src/main/resources/bourdieu.txt"), "UTF-8");
             StringBuilder total = new StringBuilder();
 
             for (String word : words) {
@@ -22,6 +21,7 @@ public class CountingAlgorithm {
                 total.append(line);
             }
             FileUtils.write(new File("src/main/resources/wordcount.txt"), total.toString(), "UTF-8");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

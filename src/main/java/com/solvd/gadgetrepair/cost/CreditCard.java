@@ -1,17 +1,49 @@
 package com.solvd.gadgetrepair.cost;
 
+import com.solvd.gadgetrepair.devices.RepairService;
+import com.solvd.gadgetrepair.devices.ServiceRecord;
 import com.solvd.gadgetrepair.human.Customer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CreditCard extends Billing implements Payable {
     private static final Logger LOGGER=LogManager.getLogger(CreditCard.class);
+    private String creditCardNumber;
+    private double creditLimit;
+
+    public CreditCard() {
+        super(AcceptedPayments.CREDIT_CARD);
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+    public double getCreditLimit() {
+        return creditLimit;
+    }
+    public void setCreditLimit(double creditLimit) {
+        this.creditLimit = creditLimit;
+    }
 
     @Override
-    public void processPayment (Customer customer) {
-        // Pretend customer has paid with credit card
-        LOGGER.info("Processing credit card payment for: " + customer.getFullName());
-        LOGGER.info("Total amount: $" + getTotalCost());
-        LOGGER.info("Payment method: " + getPaymentMethod());
+    public void calculateCost(Customer customer, ServiceRecord[] repairRecords) {
+    }
+
+    @Override
+    public void processPayment(Customer customer, RepairService repairService) {
+        double totalCost = repairService.calculateRepairCost();
+        double difference = creditLimit - totalCost;
+        String lastDigits = StringUtils.substring(creditCardNumber, creditCardNumber.length() - 4);
+        LOGGER.info("Amount charged to credit card ending in " + lastDigits + ": $" + totalCost);
+
+        if (difference < 0) {
+            LOGGER.info("Card declined. Insufficient credit limit.");
+        } else {
+            LOGGER.info("Payment successful.");
+        }
     }
 }

@@ -9,14 +9,14 @@ import java.util.List;
 public class Customer extends Person {
     private String email;
     private String phoneNumber;
-    private String preferredContact;
+    private AcceptedContact preferredContact;
     private final List<ServiceRecord<String>> repairHistory;
 
     public Customer() {
         super("");
         this.email = "";
         this.phoneNumber = "";
-        this.preferredContact = "";
+        this.preferredContact = getPreferredContact();   // HOW TO HAVE NON STRING DEFAULT CONSTRUCTOR
         this.repairHistory = new ArrayList<>();
     }
 
@@ -38,10 +38,10 @@ public class Customer extends Person {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    public String getPreferredContact() {
+    public AcceptedContact getPreferredContact() {
         return preferredContact;
     }
-    public void setPreferredContact(String preferredContact) {
+    public void setPreferredContact(AcceptedContact preferredContact) {
         this.preferredContact = preferredContact;
     }
     public List<ServiceRecord<String>> getRepairHistory() {

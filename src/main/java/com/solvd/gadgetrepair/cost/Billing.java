@@ -1,49 +1,55 @@
 package com.solvd.gadgetrepair.cost;
 
+import com.solvd.gadgetrepair.devices.Gadget;
+import com.solvd.gadgetrepair.devices.RepairService;
 import com.solvd.gadgetrepair.devices.ServiceRecord;
 import com.solvd.gadgetrepair.exceptions.PaymentException;
 import com.solvd.gadgetrepair.human.Customer;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
 
 // Calculates total cost, generates invoices, and processes payments
-public abstract class Billing {   // FIX COST CALCULATIONS
-    private double totalCost;
-    private String paymentMethod;
+public abstract class Billing {
+    private final AcceptedPayments paymentMethod;
 
-    public double getTotalCost() {
-        return totalCost;
+    public Billing(AcceptedPayments paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
-    public void setTotalCost(double totalCost) {
-        this.totalCost = totalCost;
-    }
-    public String getPaymentMethod() {
+
+    public AcceptedPayments getPaymentMethod() {
         return paymentMethod;
     }
-    public void setPaymentMethod(String paymentMethod) {
-        if (isPaymentAccepted(paymentMethod)) {
-            this.paymentMethod = paymentMethod;
-        } else {
-            throw new PaymentException("Unaccepted payment method: " + paymentMethod);
-        }
-    }
-
-    public void calculateCost(Customer customer, ServiceRecord[] repairRecords) {
-        totalCost = 0.0;
-        if (repairRecords.length > 0) {
-            totalCost = repairRecords[repairRecords.length - 1].getRepairCost();
-        }
-    }
-
-    public void processPayment (Customer customer) throws PaymentException {
-        String paymentMethod = getPaymentMethod();
+    public void setPaymentMethod(AcceptedPayments paymentMethod) {
         if (!isPaymentAccepted(paymentMethod)) {
             throw new PaymentException("Unaccepted payment method: " + paymentMethod);
         }
     }
 
-    private boolean isPaymentAccepted(String paymentMethod) {
-        String[] acceptedMethods = {"Cash", "Credit card", "PayPal"};
-        return Arrays.asList(acceptedMethods).contains(paymentMethod);
+    public void addToRecord(Customer customer, ServiceRecord[] repairRecords, Gadget gadget, RepairService repairService) {
+        String currentDate = LocalDateTime.now().toString();
+        double repairCost = repairService.calculateRepairCost();
+        String problemDescription = gadget.getProblemDescription();
+
+        if (repairRecords.length > 0) {
+            ServiceRecord<String> record = new ServiceRecord<>(currentDate, repairCost, problemDescription);
+            customer.addRepairRecord(record);
+        }
+    }
+
+    public void processPayment (Customer customer, RepairService repairService) throws PaymentException {
+        AcceptedPayments paymentMethod = getPaymentMethod();
+        if (isPaymentAccepted(paymentMethod)) {
+            throw new PaymentException("Unaccepted payment method: " + paymentMethod);
+        }
+    }
+
+    private boolean isPaymentAccepted(AcceptedPayments acceptedMethod) {
+        AcceptedPayments[] acceptedMethods = AcceptedPayments.values();
+        for (AcceptedPayments payment : acceptedMethods) {
+            if (payment == acceptedMethod) {
+                return true;
+            }
+        }
+        return false;
     }
 }

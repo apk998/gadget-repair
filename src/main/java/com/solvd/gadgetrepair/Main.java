@@ -1,9 +1,11 @@
 package com.solvd.gadgetrepair;
 
+import com.solvd.gadgetrepair.cost.AcceptedPayments;
 import com.solvd.gadgetrepair.cost.Billing;
 import com.solvd.gadgetrepair.cost.CreditCard;
 import com.solvd.gadgetrepair.devices.*;
 import com.solvd.gadgetrepair.exceptions.*;
+import com.solvd.gadgetrepair.human.AcceptedContact;
 import com.solvd.gadgetrepair.human.Customer;
 import com.solvd.gadgetrepair.human.Employee;
 import com.solvd.gadgetrepair.status.Email;
@@ -18,37 +20,17 @@ public class Main {
 
     public static void main(String[] args) {
         // Customers enter the store
-        Customer customer1 = new Customer();
-        customer1.setFullName("Max Stirner");
-        customer1.setEmail("mstirner@example.com");
-        customer1.setPhoneNumber("215-555-9640");
-        customer1.setPreferredContact("SMS");
+        Customer customer = new Customer();
+        customer.setFullName("Max Stirner");
+        customer.setEmail("mstirner@example.com");
+        customer.setPhoneNumber("215-555-9640");
+        customer.setPreferredContact(AcceptedContact.EMAIL);
 
-        Customer customer2 = new Customer();
-        customer2.setFullName("Emma Goldman");
-        customer2.setEmail("egoldman@example.com");
-        customer2.setPhoneNumber("215-555-2321");
-        customer2.setPreferredContact("email");
-
-        // Customers present gadgets for repair
-        Gadget gadget1;
-        try {
-            gadget1 = new Gadget();
-            gadget1.setGadgetType("Pager");
-            gadget1.setProblemDescription("won't turn on");
-            LOGGER.info(customer1.getFullName() + " brings in a " + gadget1.getGadgetType() + " that " + gadget1.getProblemDescription() + " for repair.");
-        } catch (GadgetException e) {
-            LOGGER.info(e.getMessage());
-        }
-        Gadget gadget2 = null;
-        try {
-            gadget2 = new Gadget();
-            gadget2.setGadgetType("Phone");
-            gadget2.setProblemDescription("cracked screen");
-            LOGGER.info(customer2.getFullName() + " brings in a " + gadget2.getGadgetType() + " with a " + gadget2.getProblemDescription() + " for repair.");
-        } catch (GadgetException e) {
-            LOGGER.info("Unaccepted gadget: " + e.getMessage());
-        }
+        // Customer presents gadget for repair
+        Gadget gadget = new Gadget();
+        gadget.setGadgetType(AcceptedGadgets.PHONE);
+        gadget.setProblemDescription("cracked screen");
+        LOGGER.info(customer.getFullName() + " brings in a " + gadget.getGadgetType() + " with a " + gadget.getProblemDescription() + " for repair.");
 
         // Pull up customer record, enter preferred notification method
         ServiceRecord<String>[] repairRecords = new ServiceRecord[]{
@@ -60,8 +42,8 @@ public class Main {
 
         // Update gadget repair status
         RepairStatus repairStatus = new RepairStatus();
-        repairStatus.addToQueue(gadget2);
-        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
+        repairStatus.addToQueue(gadget);
+        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
         // Find an employee
         Employee employee = new Employee();
@@ -71,12 +53,12 @@ public class Main {
         LOGGER.info("Employee " + employee.getFullName() + " is " + employee.getAvailability());
         employee.setAvailability("Busy");
         LOGGER.info(employee.getFullName() + " is now " + employee.getAvailability());
-        repairStatus.markUnderRepair(gadget2);
-        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
+        repairStatus.markUnderRepair(gadget);
+        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
+        RepairService repairService = (RepairService) RepairService.getRepairInfo(gadget);
         try {
-            RepairService repairService = (RepairService) RepairService.getRepairInfo(gadget2);
-            int phoneRepairTime = repairService.estimateRepairTime(gadget2);
+            int phoneRepairTime = repairService.estimateRepairTime(gadget);
             double phoneRepairCost = repairService.calculateRepairCost();
             LOGGER.info("Phone Repair - Time Estimate: " + phoneRepairTime + " hours, Cost: $" + phoneRepairCost);
         } catch (GadgetException e) {
@@ -119,38 +101,27 @@ public class Main {
         }
 
         // Gadget repair is now finished
-        repairStatus.markReady(gadget2);
-        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget2));
+        repairStatus.markReady(gadget);
+        LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
         // Add a new service record to the customer
         ServiceRecord<String> newRecord = new ServiceRecord<>("13/11/23", 237.60, "Screen repair");
-        customer2.addRepairRecord(newRecord);
+        customer.addRepairRecord(newRecord);
 
         // Update customer's repair history
-        customer2.getRepairHistory().toArray(new ServiceRecord[0]);
+        customer.getRepairHistory().toArray(new ServiceRecord[0]);
 
         // Generate and send invoice
-        Billing payment = new CreditCard();
         try {
-            payment.setPaymentMethod("Check");
-            payment.calculateCost(customer2, new ServiceRecord[]{newRecord});
-            emailMethod.sendNotification(customer2, "Repair complete", "Your device is ready for pickup");
+            Billing billing = new CreditCard();
+            billing.setPaymentMethod(AcceptedPayments.CREDIT_CARD);
 
-            // Process payment
-            payment.processPayment(customer2);
+            CreditCard creditCard = new CreditCard();
+            creditCard.setCreditCardNumber("1234-5678-9101-1121");
+            creditCard.setCreditLimit(1000.0);
+            creditCard.processPayment(customer, repairService);
         } catch (PaymentException e) {
-            LOGGER.info("Failed to process payment: " + e.getMessage());
-
-            // Customer offers alternative payment method
-            Billing alternativePayment = new CreditCard();
-            try {
-                alternativePayment.setPaymentMethod("Credit Card");
-                alternativePayment.calculateCost(customer2, new ServiceRecord[]{newRecord});
-                emailMethod.sendNotification(customer2, "Repair complete", "Your device is ready for pickup");
-                alternativePayment.processPayment(customer2);
-            } catch (PaymentException ex) {
-                LOGGER.info("Failed to process alternative payment: " + ex.getMessage());
-            }
+            LOGGER.info(e.getMessage() + "Try another payment method.");
         }
     }
 }

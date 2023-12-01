@@ -18,15 +18,16 @@ public abstract class RepairService {
     }
 
     public static Repairable getRepairInfo(Gadget gadget) {
-        String gadgetType = gadget.getGadgetType();
-        if (gadgetType.equalsIgnoreCase("Phone")) {
-            return new PhoneRepair(gadget);
-        } else if (gadgetType.equalsIgnoreCase("Laptop")) {
-            return new LaptopRepair(gadget);
-        } else if (gadgetType.equalsIgnoreCase("TV")) {
-            return new TVRepair(gadget);
-        } else {
-            throw new GadgetException("Unknown device");
+        AcceptedGadgets gadgetType = gadget.getGadgetType();
+        switch (gadgetType) {
+            case PHONE:
+                return new PhoneRepair(gadget);
+            case LAPTOP:
+                return new LaptopRepair(gadget, new RepairCosts());
+            case TV:
+                return new TVRepair(gadget);
+            default:
+                throw new GadgetException("Unknown device");
         }
     }
 
