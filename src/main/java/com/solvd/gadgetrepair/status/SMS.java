@@ -4,6 +4,7 @@ import com.solvd.gadgetrepair.human.Customer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("unused")
 public class SMS extends Notification implements Notifiable {
     private static final Logger LOGGER=LogManager.getLogger(SMS.class);
     public SMS(Notifiable notifiable) {

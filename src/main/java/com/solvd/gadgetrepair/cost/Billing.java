@@ -1,12 +1,13 @@
 package com.solvd.gadgetrepair.cost;
 
 import com.solvd.gadgetrepair.devices.Gadget;
-import com.solvd.gadgetrepair.devices.RepairService;
+import com.solvd.gadgetrepair.devices.RepairCosts;
 import com.solvd.gadgetrepair.devices.ServiceRecord;
 import com.solvd.gadgetrepair.exceptions.PaymentException;
 import com.solvd.gadgetrepair.human.Customer;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 // Calculates total cost, generates invoices, and processes payments
 public abstract class Billing {
@@ -25,9 +26,9 @@ public abstract class Billing {
         }
     }
 
-    public void addToRecord(Customer customer, ServiceRecord[] repairRecords, Gadget gadget, RepairService repairService) {
+    public void addToRecord(Customer customer, ServiceRecord[] repairRecords, Gadget gadget, RepairCosts repairCosts) {
         String currentDate = LocalDateTime.now().toString();
-        double repairCost = repairService.calculateRepairCost();
+        double repairCost = repairCosts.calculateRepairCost();
         String problemDescription = gadget.getProblemDescription();
 
         if (repairRecords.length > 0) {
@@ -36,7 +37,7 @@ public abstract class Billing {
         }
     }
 
-    public void processPayment (Customer customer, RepairService repairService) throws PaymentException {
+    public void processPayment (Customer customer, RepairCosts repairCosts) throws PaymentException {
         AcceptedPayments paymentMethod = getPaymentMethod();
         if (isPaymentAccepted(paymentMethod)) {
             throw new PaymentException("Unaccepted payment method: " + paymentMethod);
@@ -44,12 +45,7 @@ public abstract class Billing {
     }
 
     private boolean isPaymentAccepted(AcceptedPayments acceptedMethod) {
-        AcceptedPayments[] acceptedMethods = AcceptedPayments.values();
-        for (AcceptedPayments payment : acceptedMethods) {
-            if (payment == acceptedMethod) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(AcceptedPayments.values())
+                .anyMatch(payment -> payment == acceptedMethod);
     }
 }

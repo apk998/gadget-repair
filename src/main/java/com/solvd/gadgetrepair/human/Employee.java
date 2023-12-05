@@ -5,10 +5,8 @@ public class Employee extends Person {
     private String specialty;
     private String availability;
 
-    public Employee() {
-        super("");
-        this.specialty = "";
-        this.availability = "";
+    public Employee(String fullName) {
+        super(fullName);
     }
 
     public String getSpecialty() {

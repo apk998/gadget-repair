@@ -10,21 +10,14 @@ public class Customer extends Person {
     private String email;
     private String phoneNumber;
     private AcceptedContact preferredContact;
-    private final List<ServiceRecord<String>> repairHistory;
+    private final List<ServiceRecord<String>> repairHistory = new ArrayList<>();
 
-    public Customer() {
-        super("");
-        this.email = "";
-        this.phoneNumber = "";
-        this.preferredContact = getPreferredContact();   // HOW TO HAVE NON STRING DEFAULT CONSTRUCTOR
-        this.repairHistory = new ArrayList<>();
+    public Customer(String fullName) {
+        super(fullName);
     }
 
     public String getFullName() {
         return super.getFullName();
-    }
-    public void setFullName(String fullName) {
-        super.setFullName(fullName);
     }
     public String getEmail() {
         return email;
@@ -48,7 +41,9 @@ public class Customer extends Person {
         return repairHistory;
     }
     public void addRepairRecord(ServiceRecord<String> serviceRecord) {
-        repairHistory.add(serviceRecord);
+        if (serviceRecord != null) {
+            repairHistory.add(serviceRecord);
+        }
     }
 
     @Override

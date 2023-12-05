@@ -1,11 +1,12 @@
 package com.solvd.gadgetrepair.cost;
 
-import com.solvd.gadgetrepair.devices.RepairService;
+import com.solvd.gadgetrepair.devices.RepairCosts;
 import com.solvd.gadgetrepair.devices.ServiceRecord;
 import com.solvd.gadgetrepair.human.Customer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("unused")
 public class Cash extends Billing implements Payable {
     private static final Logger LOGGER=LogManager.getLogger(Cash.class);
     private double amountPaid;
@@ -26,8 +27,8 @@ public class Cash extends Billing implements Payable {
     }
 
     @Override
-    public void processPayment(Customer customer, RepairService repairService) {
-        double totalCost = repairService.calculateRepairCost();
+    public void processPayment(Customer customer, RepairCosts repairCosts) {
+        double totalCost = repairCosts.calculateRepairCost();
         double change = amountPaid - totalCost;
         LOGGER.info("Amount paid in cash: $" + amountPaid);
 

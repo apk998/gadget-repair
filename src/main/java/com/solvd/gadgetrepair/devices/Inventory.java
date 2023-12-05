@@ -11,7 +11,7 @@ import java.util.Set;
 
 // Stores the stock of spare parts and tools for repair
 public class Inventory {
-    private final Set<String> parts;
+    private final Set<String> parts;   // rewrite to account for enums?
     private final Map<String, Integer> quantities;
     public static final int MAX_CAPACITY = 5000;
     public static final int DEFAULT_PART_QUANTITY = 10;

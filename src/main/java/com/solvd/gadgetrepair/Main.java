@@ -15,34 +15,48 @@ import com.solvd.gadgetrepair.status.RepairStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class Main {
     private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // Customers enter the store
-        Customer customer = new Customer();
-        customer.setFullName("Max Stirner");
-        customer.setEmail("mstirner@example.com");
+        Customer customer = new Customer("Max Stirner");
+        customer.setEmail("egoldman@example.com");
         customer.setPhoneNumber("215-555-9640");
         customer.setPreferredContact(AcceptedContact.EMAIL);
 
+        Field[] customerFields = customer.getClass().getDeclaredFields();
+        Arrays.stream(customer.getClass().getDeclaredFields())
+                .filter(field -> field.getName().equals("email"))
+                .findFirst()
+                .ifPresent(field -> {
+                    field.setAccessible(true);
+                    try {
+                        field.set(customer, "mstirner@example.com");
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                    field.setAccessible(false);
+                });
+
         // Customer presents gadget for repair
         IMenu chooseGadgetType = () -> {
-            System.out.println("Choose a gadget type:");
+            LOGGER.info("Choose a gadget type:");
             AcceptedGadgets[] gadgetTypes = AcceptedGadgets.values();
-            for (int i = 0; i < gadgetTypes.length; i++) {
-                System.out.println((i + 1) + ". " + gadgetTypes[i].getDisplayName());
-            }
-
+            Arrays.stream(gadgetTypes)
+                    .forEachOrdered(gadgetType -> LOGGER.info((Arrays.asList(gadgetTypes).indexOf(gadgetType) + 1) + ". " + gadgetType.getDisplayName()));
             int userChoice = getUserChoice(gadgetTypes.length);
 
             Gadget gadget = new Gadget();
             gadget.setGadgetType(gadgetTypes[userChoice - 1]);
 
             // Display the chosen gadget type
-            System.out.println("Chosen Gadget Type: " + gadget.getGadgetType().getDisplayName());
+            LOGGER.info("Chosen Gadget Type: " + gadget.getGadgetType().getDisplayName());
         };
         chooseGadgetType.execute();
 
@@ -65,8 +79,7 @@ public class Main {
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
         // Find an employee
-        Employee employee = new Employee();
-        employee.setFullName("John Zerzan");
+        Employee employee = new Employee("John Zerzan");
         employee.setSpecialty("Phone technician");
         employee.setAvailability("Available");
         LOGGER.info("Employee " + employee.getFullName() + " is " + employee.getAvailability());
@@ -75,14 +88,18 @@ public class Main {
         repairStatus.markUnderRepair(gadget);
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
-        RepairService repairService = (RepairService) RepairService.getRepairInfo(gadget);
-        try {
-            int phoneRepairTime = repairService.estimateRepairTime(gadget);
-            double phoneRepairCost = repairService.calculateRepairCost();
-            LOGGER.info("Phone Repair - Time Estimate: " + phoneRepairTime + " hours, Cost: $" + phoneRepairCost);
-        } catch (GadgetException e) {
-            LOGGER.info(e.getMessage());
-        }
+
+        // Get time and cost estimates
+        RepairCosts repairCosts = new RepairCosts(gadget);
+        repairCosts.setTimeEstimate(3);
+
+        PhoneParts screenPart = PhoneParts.SCREEN;
+        LOGGER.info("Available part for " + gadget.getGadgetType().getDisplayName() + ":");
+        LOGGER.info("1. " + screenPart.name() + " - $" + screenPart.getCost());
+        repairCosts.addCost(screenPart);
+        double totalPartsCost = repairCosts.getAllPartsCost();
+        LOGGER.info("Total parts cost: $" + totalPartsCost);
+        LOGGER.info("Estimated repair cost: $" + repairCosts.calculateRepairCost());
 
 
         // Check inventory for necessary part
@@ -138,17 +155,17 @@ public class Main {
             CreditCard creditCard = new CreditCard();
             creditCard.setCreditCardNumber("1234-5678-9101-1121");
             creditCard.setCreditLimit(1000.0);
-            creditCard.processPayment(customer, repairService);
+            creditCard.processPayment(customer, repairCosts);
         } catch (PaymentException e) {
             LOGGER.info(e.getMessage() + "Try another payment method.");
         }
     }
 
     private static void displayMenu(String menuTitle, IMenu[] menuOptions) {
-        System.out.println(menuTitle + ":");
-        for (int i = 0; i < menuOptions.length; i++) {
-            System.out.println((i + 1) + ". " + menuOptions[i].getClass().getSimpleName());
-        }
+        LOGGER.info(menuTitle + ":");
+        IntStream.range(0, menuOptions.length)
+                .mapToObj(i -> (i + 1) + ". " + menuOptions[i].getClass().getSimpleName())
+                .forEach(LOGGER::info);
     }
 
     private static int getUserChoice(int maxOption) {
@@ -156,15 +173,15 @@ public class Main {
         int userChoice = 0;
 
         do {
-            System.out.print("Enter your choice (1-" + maxOption + "): ");
+            LOGGER.info("Enter your choice (1-" + maxOption + "): ");
             try {
                 userChoice = Integer.parseInt(scanner.nextLine());
 
                 if (userChoice < 1 || userChoice > maxOption) {
-                    System.out.println("Invalid choice. Please enter a number between 1 and " + maxOption + ".");
+                    LOGGER.info("Invalid choice. Please enter a number between 1 and " + maxOption + ".");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                LOGGER.info("Invalid input. Please enter a number.");
             }
         } while (userChoice < 1 || userChoice > maxOption);
 

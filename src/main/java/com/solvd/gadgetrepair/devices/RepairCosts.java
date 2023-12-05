@@ -1,30 +1,42 @@
 package com.solvd.gadgetrepair.devices;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RepairCosts {
-    private final Map<String, Double> partCost;
-    private final Map<String, Integer> timeEstimate;
+    public static final double LABOR_COST_PER_HOUR = 25.00;
+    public static final double ADDITIONAL_FEES = 20.00;
+    public static final double TAX_RATE = 1.08;
 
-    public RepairCosts () {
-        this.partCost = new HashMap<>();
-        this.timeEstimate = new HashMap<>();
+    private final List<ICost> costs = new ArrayList<>();
+    private final Gadget gadget;
+    private int timeEstimate;   // in hours
+
+    public RepairCosts(Gadget gadget) {
+        this.gadget = gadget;
     }
 
-    public void setPartCost(String partName, double cost) {
-        partCost.put(partName, cost);
+    public int getTimeEstimate() {
+        return timeEstimate;
     }
 
-    public void setTimeEstimate(String problemDescription, int hours) {
-        timeEstimate.put(problemDescription, hours);
+    public void setTimeEstimate(int timeEstimate) {
+        this.timeEstimate = timeEstimate;
     }
 
-    public double getPartCost(String partName) {
-        return partCost.getOrDefault(partName, 0.0);
+    public double getAllPartsCost() {
+        return costs.stream().mapToDouble(ICost::getCost).sum();
     }
 
-    public int getTimeEstimate(String problemDescription) {
-        return timeEstimate.getOrDefault(problemDescription, 0);
+    public void addCost(ICost cost) {
+        costs.add(cost);
+    }
+
+    public double calculateRepairCost() {
+        double laborCost = getTimeEstimate() * LABOR_COST_PER_HOUR;
+        double partsCost = getAllPartsCost();
+        double subtotal = laborCost + partsCost;
+        double totalCost = subtotal + ADDITIONAL_FEES;
+        return totalCost * TAX_RATE;
     }
 }

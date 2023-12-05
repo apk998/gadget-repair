@@ -1,5 +1,6 @@
 package com.solvd.gadgetrepair.human;
 
+@SuppressWarnings("unused")
 public enum AcceptedContact {
     EMAIL ("email"),
     SMS ("SMS");

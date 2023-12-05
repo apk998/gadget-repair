@@ -1,6 +1,6 @@
 package com.solvd.gadgetrepair.cost;
 
-import com.solvd.gadgetrepair.devices.RepairService;
+import com.solvd.gadgetrepair.devices.RepairCosts;
 import com.solvd.gadgetrepair.devices.ServiceRecord;
 import com.solvd.gadgetrepair.human.Customer;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +34,8 @@ public class CreditCard extends Billing implements Payable {
     }
 
     @Override
-    public void processPayment(Customer customer, RepairService repairService) {
-        double totalCost = repairService.calculateRepairCost();
+    public void processPayment(Customer customer, RepairCosts repairCosts) {
+        double totalCost = repairCosts.calculateRepairCost();
         double difference = creditLimit - totalCost;
         String lastDigits = StringUtils.substring(creditCardNumber, creditCardNumber.length() - 4);
         LOGGER.info("Amount charged to credit card ending in " + lastDigits + ": $" + totalCost);
