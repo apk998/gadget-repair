@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 public class Main {
     private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Customers enter the store
         Customer customer = new Customer("Max Stirner");
         customer.setEmail("egoldman@example.com");
@@ -45,14 +45,14 @@ public class Main {
                 });
 
         // Customer presents gadget for repair
+        Gadget gadget = new Gadget();
+
         IMenu chooseGadgetType = () -> {
             LOGGER.info("Choose a gadget type:");
             AcceptedGadgets[] gadgetTypes = AcceptedGadgets.values();
             Arrays.stream(gadgetTypes)
                     .forEachOrdered(gadgetType -> LOGGER.info((Arrays.asList(gadgetTypes).indexOf(gadgetType) + 1) + ". " + gadgetType.getDisplayName()));
             int userChoice = getUserChoice(gadgetTypes.length);
-
-            Gadget gadget = new Gadget();
             gadget.setGadgetType(gadgetTypes[userChoice - 1]);
 
             // Display the chosen gadget type
@@ -60,8 +60,6 @@ public class Main {
         };
         chooseGadgetType.execute();
 
-        Gadget gadget = new Gadget();
-        gadget.setGadgetType(AcceptedGadgets.PHONE);
         gadget.setProblemDescription("cracked screen");
         LOGGER.info(customer.getFullName() + " brings in a " + gadget.getGadgetType().getDisplayName() + " with a " + gadget.getProblemDescription() + " for repair.");
 
