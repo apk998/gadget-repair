@@ -91,10 +91,19 @@ public class Main {
         RepairCosts repairCosts = new RepairCosts(gadget);
         repairCosts.setTimeEstimate(3);
 
-        PhoneParts screenPart = PhoneParts.SCREEN;
-        LOGGER.info("Available part for " + gadget.getGadgetType().getDisplayName() + ":");
-        LOGGER.info("1. " + screenPart.name() + " - $" + screenPart.getCost());
-        repairCosts.addCost(screenPart);
+        IMenu chooseRepairPart = () -> {
+            LOGGER.info("Choose a repair part:");
+            RepairParts[] parts = RepairParts.values();
+            LOGGER.info("This device's problem is: " + gadget.getProblemDescription() + ". Choose a spare part, if necessary.");
+
+            IntStream.range(0, parts.length)
+                    .forEachOrdered(i -> LOGGER.info((i + 1) + ". " + parts[i].getDisplayName()));
+
+            int partChoice = getUserChoice(parts.length);
+            repairCosts.addCost(parts[partChoice - 1]);
+        };
+        chooseRepairPart.execute();
+
         double totalPartsCost = repairCosts.getAllPartsCost();
         LOGGER.info("Total parts cost: $" + totalPartsCost);
         LOGGER.info("Estimated repair cost: $" + repairCosts.calculateRepairCost());

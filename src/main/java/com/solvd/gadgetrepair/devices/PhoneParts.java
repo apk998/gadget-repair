@@ -1,3 +1,5 @@
+/*
+
 package com.solvd.gadgetrepair.devices;
 
 @SuppressWarnings("unused")
@@ -19,3 +21,5 @@ public enum PhoneParts implements ICost {
             return cost;
         }
     }
+
+ */

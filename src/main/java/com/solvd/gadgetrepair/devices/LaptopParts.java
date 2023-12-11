@@ -1,3 +1,5 @@
+/*
+
 package com.solvd.gadgetrepair.devices;
 
 @SuppressWarnings("unused")
@@ -20,3 +22,5 @@ public enum LaptopParts implements ICost {
         return cost;
     }
 }
+
+ */
