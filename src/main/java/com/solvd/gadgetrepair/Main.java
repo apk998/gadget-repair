@@ -24,7 +24,7 @@ public class Main {
     private static final Logger LOGGER=LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        // Customers enter the store
+        // Customer enters the store
         Customer customer = new Customer("Max Stirner");
         customer.setEmail("egoldman@example.com");
         customer.setPhoneNumber("215-555-9640");
@@ -55,7 +55,6 @@ public class Main {
             int userChoice = getUserChoice(gadgetTypes.length);
             gadget.setGadgetType(gadgetTypes[userChoice - 1]);
 
-            // Display the chosen gadget type
             LOGGER.info("Chosen Gadget Type: " + gadget.getGadgetType().getDisplayName());
         };
         chooseGadgetType.execute();
@@ -147,11 +146,9 @@ public class Main {
         repairStatus.markReady(gadget);
         LOGGER.info("Gadget status is " + repairStatus.getStatus(gadget));
 
-        // Add a new service record to the customer
-        ServiceRecord<String> newRecord = new ServiceRecord<>("13/11/23", 237.60, "Screen repair");
-        customer.addRepairRecord(newRecord);
-
         // Update customer's repair history
+        ServiceRecord<String> newRecord = new ServiceRecord<>("12/12/23", 237.60, "Screen repair");
+        customer.addRepairRecord(newRecord);
         customer.getRepairHistory().toArray(new ServiceRecord[0]);
 
         // Generate and send invoice
